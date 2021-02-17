@@ -1,16 +1,22 @@
 from django.core.mail import EmailMessage
 from django.shortcuts import render
-from.token import account_activation_token
+from .token import code_for_email
+from django.core.mail import send_mail
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
-def MailSend(request, *args, **kwargs):
-    to_email = kwargs.get('email')
+
+@api_view(['POST'])
+def mail_send(request, *args, **kwargs):
+    to_email = request.args.get('email')
     mail_subject = 'Activate your account.'
-    message = account_activation_token.make_token()
-    email = EmailMessage(
-        mail_subject, message, to=[to_email]
+    message = code_for_email()
+    send_mail(
+        mail_subject,
+        message,
+        'testproject@example.com',
+        [to_email],
     )
-    email.send()
-    pass
 
 def TokenSend(request):
     pass
