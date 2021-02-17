@@ -1,3 +1,5 @@
+import os
+
 from django.core.mail import EmailMessage
 from django.shortcuts import render
 from .token import code_for_email
@@ -7,16 +9,20 @@ from rest_framework.response import Response
 
 
 @api_view(['POST'])
-def mail_send(request, *args, **kwargs):
-    to_email = request.args.get('email')
+def mail_send(request):
+    to_email = request.query_params
+    to_email = to_email.get('email')
     mail_subject = 'Activate your account.'
     message = code_for_email()
+    testlogin = os.getenv('LOGIN')
+    testpass = os.getenv('PASS')
     send_mail(
         mail_subject,
         message,
         'testproject@example.com',
         [to_email],
     )
+    return Response({'email': to_email})
 
 def TokenSend(request):
     pass
