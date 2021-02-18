@@ -1,6 +1,6 @@
 import os
 
-from django.core.mail import EmailMessage
+from .models import PreUser
 from django.shortcuts import render
 from .token import code_for_email
 from django.core.mail import send_mail
@@ -10,10 +10,16 @@ from rest_framework.response import Response
 
 @api_view(['POST'])
 def mail_send(request):
+    code_to_send = code_for_email()
     to_email = request.query_params
     to_email = to_email.get('email')
+    test_object = PreUser.objects.filter(mail=to_email)
+    if test_object:
+        code_to_send = test_object.values('code')
+
+    PreUser.objects.get_or_create(mail=to_email, code=code_to_send)
     mail_subject = 'Activate your account.'
-    message = code_for_email()
+    message = code_to_send
     send_mail(
         mail_subject,
         message,
