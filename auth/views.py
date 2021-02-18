@@ -14,8 +14,6 @@ def mail_send(request):
     to_email = to_email.get('email')
     mail_subject = 'Activate your account.'
     message = code_for_email()
-    testlogin = os.getenv('LOGIN')
-    testpass = os.getenv('PASS')
     send_mail(
         mail_subject,
         message,
