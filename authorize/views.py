@@ -10,14 +10,16 @@ from rest_framework.response import Response
 
 @api_view(['POST'])
 def mail_send(request):
-    code_to_send = code_for_email()
     to_email = request.query_params
     to_email = to_email.get('email')
     test_object = PreUser.objects.filter(mail=to_email)
     if test_object:
-        code_to_send = test_object.values('code')
+        exist_pair = PreUser.objects.get(mail=to_email)
+        code_to_send = exist_pair.code
+    else:
+        code_to_send = code_for_email()
+        PreUser.objects.create(mail=to_email, code=code_to_send)
 
-    PreUser.objects.get_or_create(mail=to_email, code=code_to_send)
     mail_subject = 'Activate your account.'
     message = code_to_send
     send_mail(
