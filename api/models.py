@@ -25,7 +25,15 @@ class Titles(models.Model):
 
 
 class User(AbstractUser):
-    pass
+    email = models.EmailField('email address', unique=True)
+    bio = models.TextField(max_length=300, blank=True)
+    USER_ROLE = (
+        ('user', 'user'),
+        ('moderator', 'moderator'),
+        ('admin', 'admin'),
+    )
+    role = models.CharField(max_length=9, choices=USER_ROLE, default='user')
+    USERNAME_FIELD = 'email'
 
 
 '''class Reviews(models.Model):
