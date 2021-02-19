@@ -24,7 +24,7 @@ class Titles(models.Model):
 
 
 class Reviews(models.Model):
-    title = models.ForeignKey(Title, on_delete=models.CASCADE)
+    title = models.ForeignKey(Titles, on_delete=models.CASCADE)
     text = models.TextField()
     score = models.IntergerField(validator=[MinValueValidator(1), MaxValueValidator(10)])
 
@@ -34,6 +34,6 @@ class Comment(models.Model):
         User,
         on_delete=models.CASCADE,
     )
-    reviews = model.ForeignKey(
+    reviews = models.ForeignKey(
         Reviews, on_delete=models.CASCADE
     )
