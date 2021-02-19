@@ -1,5 +1,5 @@
 from django.db import models
-from django.core.validators import MaxValueValidator, MinValueValidator
+'''from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 class Reviews(models.Model):
@@ -16,3 +16,4 @@ class Comment(models.Model):
     reviews = model.ForeignKey(
         Reviews, on_delete=models.CASCADE
     )
+'''
