@@ -140,3 +140,5 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = os.getenv('LOGIN')
 EMAIL_HOST_PASSWORD = os.getenv('PASS')
 EMAIL_PORT = 587
+
+AUTH_USER_MODEL = 'api.User'
