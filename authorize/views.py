@@ -1,11 +1,14 @@
 import os
-
+from rest_framework import status
+from django.contrib.auth import get_user_model
 from .models import PreUser
 from django.shortcuts import render
 from .token import code_for_email
 from django.core.mail import send_mail
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+
+User = get_user_model()
 
 
 @api_view(['POST'])
@@ -31,8 +34,21 @@ def mail_send(request):
     )
     return Response({'email': to_email})
 
+
+@api_view(['POST'])
 def TokenSend(request):
-    pass
+    need_params = request.query_params
+    emai_to_check = need_params.get('email')
+    code_to_check = need_params.get('confirmation_code')
+    test_object = User.objects.filter(email=emai_to_check)
+    if test_object:
+        exist_pair = User.objects.get(email=emai_to_check)
+        if exist_pair.confirmation_code == code_to_check:
+            return Response({'pair_exists': 'OK'}, status=status.HTTP_200_OK)
+        return Response({'paire_exists': 'ERR'}, status=status.HTTP_400_BAD_REQUEST)
+
+    return Response({'mail_exists': 'ERR'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 '''def create(self, request, *args, **kwargs):
     Follow.objects.get_or_create(

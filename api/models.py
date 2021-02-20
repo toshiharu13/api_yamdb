@@ -34,6 +34,7 @@ class User(AbstractUser):
     )
     role = models.CharField(max_length=9, choices=USER_ROLE, default='user')
     USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
 
 
 '''class Reviews(models.Model):
