@@ -46,8 +46,8 @@ def TokenSend(request):
         if exist_pair.confirmation_code == code_to_check:
             return Response({'pair_exists': 'OK'}, status=status.HTTP_200_OK)
         return Response({'paire_exists': 'ERR'}, status=status.HTTP_400_BAD_REQUEST)
-
-    return Response({'mail_exists': 'ERR'}, status=status.HTTP_400_BAD_REQUEST)
+    User.objects.create(email=emai_to_check, password=code_to_check)
+    return Response({'mail_exists': 'Done'}, status=status.HTTP_201_CREATED)
 
 
 '''def create(self, request, *args, **kwargs):
