@@ -50,7 +50,7 @@ def TokenSend(request):
             token_to_send = get_tokens_for_user(object_user)
             return Response(token_to_send)
         else:
-            return Response({'paire_exists': 'ERR'}, status=status.HTTP_400_BAD_REQUEST)  # ошибка если пара не совпадает
+            return Response({'field_name': 'ERR'}, status=status.HTTP_400_BAD_REQUEST)  # ошибка если пара не совпадает
     #  если пользователя нет проверяем временную таблицу
     test_object = PreUser.objects.filter(email=email_to_check)
     if test_object:
@@ -59,8 +59,7 @@ def TokenSend(request):
             User.objects.create(email=email_to_check, password=code_to_check)
             token_to_send = get_tokens_for_user(object_pre_u)
             return Response(token_to_send)
-
-    return Response({'paire_exists': 'ERR'},
+    return Response({'field_name': 'ERR'},
                     status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -70,8 +69,7 @@ def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
 
     return {
-        'refresh': str(refresh),
-        'access': str(refresh.access_token),
+        'token': str(refresh.access_token),
     }
 
 
