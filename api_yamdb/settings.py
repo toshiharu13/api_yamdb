@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+from datetime import timedelta
+
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -142,3 +144,6 @@ EMAIL_HOST_PASSWORD = os.getenv('PASS')
 EMAIL_PORT = 587
 
 AUTH_USER_MODEL = 'api.User'
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=30),
+}
