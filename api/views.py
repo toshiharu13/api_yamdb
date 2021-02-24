@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
-from .permissions import IsAdminUser
+from .permissions import IsAdminOrRead
 User = get_user_model()
 
 from .models import Titles, Category, Genre
@@ -35,6 +35,6 @@ class UserInfo(APIView):
 
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminOrRead]
     queryset = User.objects.all()
     http_method_names = ('get', 'post', 'delete', 'patch')
