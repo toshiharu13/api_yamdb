@@ -23,9 +23,6 @@ router.register('users', UserViewSet, basename='useroperations')
 
 urlpatterns = [
 
-    path('genres/<slug:slug>/', GenresViewSet, name="genres_slug"),
-
     path("users/me/", UserInfo.as_view()),
-
     path('', include(router.urls)),
 ]

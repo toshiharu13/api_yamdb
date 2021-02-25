@@ -19,25 +19,24 @@ from .serializers import GenreSerializer, UserSerializer, CategoriesSerializer, 
 class GenresViewSet(viewsets.ModelViewSet):
     serializer_class = GenreSerializer
     queryset = Genre.objects.all()
-
-
-    def destroy(self, request, *args, **kwargs):
-        genre = self.get_object()
-        self.perform_destroy(genre)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    permission_classes = [IsAdminOrRead]
+    lookup_field = 'slug'
+    http_method_names = ('get', 'post', 'delete')
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategoriesSerializer
     queryset = Category.objects.all()
-
+    permission_classes = [IsAdminOrRead]
+    lookup_field = 'slug'
+    http_method_names = ('get', 'post', 'delete')
 
 # class TitlesViewSet(viewsets.ModelViewSet):
 #     serializer_class = TitlesSerializer
 #
 
 
-    permission_classes = IsAdminOrRead
+
 
 class UserInfo(APIView):
     permission_classes = [IsAuthenticated]
