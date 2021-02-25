@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404
 from django.http import Http404
+from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework import viewsets, filters, permissions, mixins, status
 
@@ -28,15 +29,19 @@ class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategoriesSerializer
     queryset = Category.objects.all()
     permission_classes = [IsAdminOrRead]
-    lookup_field = 'slug'
     http_method_names = ('get', 'post', 'delete')
+    filter_backends = [filters.SearchFilter]
+    filterset_fields = ['name', ]
+    lookup_field = 'slug'
+
 
 class TitlesViewSet(viewsets.ModelViewSet):
     serializer_class = TitlesSerializer
     queryset = Titles.objects.all()
     http_method_names = ('get', 'post', 'delete', 'patch')
     permission_classes = [IsAdminOrRead]
-
+    filter_backends = [filters.SearchFilter]
+    filterset_fields = ['name', ]
 
 
 class UserInfo(APIView):
