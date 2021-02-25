@@ -31,10 +31,11 @@ class CategoryViewSet(viewsets.ModelViewSet):
     lookup_field = 'slug'
     http_method_names = ('get', 'post', 'delete')
 
-# class TitlesViewSet(viewsets.ModelViewSet):
-#     serializer_class = TitlesSerializer
-#
-
+class TitlesViewSet(viewsets.ModelViewSet):
+    serializer_class = TitlesSerializer
+    queryset = Titles.objects.all()
+    http_method_names = ('get', 'post', 'delete', 'patch')
+    permission_classes = [IsAdminOrRead]
 
 
 

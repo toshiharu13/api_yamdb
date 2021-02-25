@@ -3,13 +3,13 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 
-from .views import GenresViewSet, UserInfo, UserViewSet, CategoryViewSet
+from .views import GenresViewSet, UserInfo, UserViewSet, CategoryViewSet, TitlesViewSet
 
 
 router = DefaultRouter()
 router.register('genres', GenresViewSet)
 router.register('categories', CategoryViewSet)
-#router.register('titles', TitlesViewSet)
+router.register('titles', TitlesViewSet)
 
 # router.register('titles', TitlesViewSet)
 
