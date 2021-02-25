@@ -2,10 +2,15 @@ from django.urls import path, include
 
 from rest_framework.routers import DefaultRouter
 
-from .views import GenresViewSet, UserInfo, UserViewSet
+
+from .views import GenresViewSet, UserInfo, UserViewSet, CategoryViewSet
+
 
 router = DefaultRouter()
 router.register('genres', GenresViewSet)
+router.register('categories', CategoryViewSet)
+#router.register('titles', TitlesViewSet)
+
 # router.register('titles', TitlesViewSet)
 
 # router.register('posts', PostViewSet)
@@ -15,7 +20,12 @@ router.register('genres', GenresViewSet)
 router.register('users', UserViewSet, basename='useroperations')
 
 
+
 urlpatterns = [
+
+    path('genres/<slug:slug>/', GenresViewSet, name="genres_slug"),
+
     path("users/me/", UserInfo.as_view()),
+
     path('', include(router.urls)),
 ]

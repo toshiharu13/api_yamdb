@@ -18,7 +18,7 @@ class Titles(models.Model):
     genre = models.ForeignKey(Genre, on_delete=models.CASCADE, related_name="titles_genre")
     description = models.TextField(default='textfield')
     name = models.CharField(verbose_name='Название пройзведения', max_length=200)
-    year = models.DateField("Дата публикации", auto_now_add=False)
+    year = models.DateField('Дата публикации', auto_now_add=False)
 
     def __str__(self):
         return self.name
