@@ -7,6 +7,7 @@ from .token import code_for_email
 from django.core.mail import send_mail
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
 
 User = get_user_model()
 
@@ -14,7 +15,7 @@ User = get_user_model()
 @api_view(['POST'])
 def mail_send(request):
     code_to_send = code_for_email()
-    to_email = request.query_params
+    to_email = request.data
     to_email = to_email.get('email')
     test_object = PreUser.objects.filter(email=to_email)
     if test_object:
@@ -37,17 +38,39 @@ def mail_send(request):
 
 @api_view(['POST'])
 def TokenSend(request):
-    need_params = request.query_params
-    emai_to_check = need_params.get('email')
+    need_params = request.data
+    email_to_check = need_params.get('email')
     code_to_check = need_params.get('confirmation_code')
-    test_object = User.objects.filter(email=emai_to_check)
+    test_object = User.objects.filter(email=email_to_check)
+    # если в БД есть такой пользователь сверяем пароль
     if test_object:
-        exist_pair = User.objects.get(email=emai_to_check)
-        if exist_pair.confirmation_code == code_to_check:
-            return Response({'pair_exists': 'OK'}, status=status.HTTP_200_OK)
-        return Response({'paire_exists': 'ERR'}, status=status.HTTP_400_BAD_REQUEST)
-    User.objects.create(email=emai_to_check, password=code_to_check)
-    return Response({'mail_exists': 'Done'}, status=status.HTTP_201_CREATED)
+        object_user = User.objects.get(email=email_to_check)
+        # если пароль совпадает генерируем токен
+        if object_user.password == code_to_check:
+            token_to_send = get_tokens_for_user(object_user)
+            return Response(token_to_send)
+        else:
+            return Response({'field_name': 'ERR'}, status=status.HTTP_400_BAD_REQUEST)  # ошибка если пара не совпадает
+    #  если пользователя нет проверяем временную таблицу
+    test_object = PreUser.objects.filter(email=email_to_check)
+    if test_object:
+        object_pre_u = PreUser.objects.get(email=email_to_check)
+        if object_pre_u.confirmation_code == code_to_check:
+            User.objects.create(email=email_to_check, password=code_to_check)
+            token_to_send = get_tokens_for_user(object_pre_u)
+            return Response(token_to_send)
+    return Response({'field_name': 'ERR'},
+                    status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+def get_tokens_for_user(user):
+    refresh = RefreshToken.for_user(user)
+
+    return {
+        'token': str(refresh.access_token),
+    }
 
 
 '''def create(self, request, *args, **kwargs):
