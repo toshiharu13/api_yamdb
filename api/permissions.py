@@ -22,7 +22,7 @@ class IsModeratorAdminAuthor(permissions.BasePermission):
 
 class IsAdminOrRead(permissions.BasePermission):
     def has_permission(self, request, view):
-        return (
+        return bool(
                 request.user.is_authenticated
                 and (request.user.is_staff or request.user.role == 'admin')
                 or request.method in permissions.SAFE_METHODS
