@@ -15,16 +15,24 @@ class CategoriesSerializer(serializers.ModelSerializer):
         model = Category
 
 
-class TitleCreateUpdateSerializer(serializers.ModelSerializer):
-    genre = GenreSerializer(many=True)
-    category = CategoriesSerializer()
+class TitleGetListSerializer(serializers.ModelSerializer):
+    id = serializers.PrimaryKeyRelatedField(read_only=True)
+    rating = serializers.FloatField(read_only=True)
+    category = serializers.SlugRelatedField(read_only=True,
+                                            slug_field='slug',
+                                            many=True,
+                                            )
+    genre = serializers.SlugRelatedField(read_only=True,
+                                         slug_field='slug',
+                                         many=True,
+                                         )
 
     class Meta:
-        fields = ('category', 'genre', 'description', 'name', 'year')
+        fields = ('id', 'name', 'year', 'category', 'genre', 'rating')
         model = Titles
 
 
-class TitlesSerializer(serializers.ModelSerializer):
+class TitlesPostUpdateSerializer(serializers.ModelSerializer):
     genre = serializers.SlugRelatedField(
         queryset=Genre.objects.all(),
         slug_field='slug',

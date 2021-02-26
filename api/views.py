@@ -15,7 +15,7 @@ from .permissions import IsAdminOrNone, IsModeratorAdminAuthor, IsAdminOrRead
 User = get_user_model()
 
 from .models import Titles, Category, Genre
-from .serializers import GenreSerializer, UserSerializer, CategoriesSerializer, TitlesSerializer, TitleCreateUpdateSerializer
+from .serializers import GenreSerializer, UserSerializer, CategoriesSerializer, TitlesPostUpdateSerializer, TitleGetListSerializer
 
 
 
@@ -41,8 +41,8 @@ class TitlesViewSet(viewsets.ModelViewSet):
     #  serializer_class = TitlesSerializer
     def get_serializer_class(self):
         if self.request.method in SAFE_METHODS:
-            return TitleCreateUpdateSerializer
-        return TitlesSerializer
+            return TitleGetListSerializer
+        return TitlesPostUpdateSerializer
     queryset = Titles.objects.all()
     http_method_names = ('get', 'post', 'delete', 'patch')
     permission_classes = [IsAdminOrRead]
