@@ -9,6 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
+from .mixins import ListPostDelMix
 from .permissions import IsAdminOrNone, IsModeratorAdminAuthor, IsAdminOrRead
 User = get_user_model()
 
@@ -17,19 +18,17 @@ from .serializers import GenreSerializer, UserSerializer, CategoriesSerializer, 
 
 
 
-class GenresViewSet(viewsets.ModelViewSet):
+class GenresViewSet(ListPostDelMix):
     serializer_class = GenreSerializer
     queryset = Genre.objects.all()
     permission_classes = [IsAdminOrRead]
     lookup_field = 'slug'
-    http_method_names = ('get', 'post', 'delete')
 
 
-class CategoryViewSet(viewsets.ModelViewSet):
+class CategoryViewSet(ListPostDelMix):
     serializer_class = CategoriesSerializer
     queryset = Category.objects.all()
     permission_classes = [IsAdminOrRead]
-    http_method_names = ('get', 'post', 'delete')
     filter_backends = [filters.SearchFilter]
     filterset_fields = ['name', ]
     lookup_field = 'slug'
