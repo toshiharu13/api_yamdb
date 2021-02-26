@@ -5,6 +5,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, filters, permissions, mixins, status
 
 from rest_framework.decorators import action
+from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
@@ -23,14 +24,16 @@ class GenresViewSet(ListPostDelMix):
     queryset = Genre.objects.all()
     permission_classes = [IsAdminOrRead]
     lookup_field = 'slug'
+    filter_backends = [SearchFilter]
+    search_fields = ['name', ]
 
 
 class CategoryViewSet(ListPostDelMix):
     serializer_class = CategoriesSerializer
     queryset = Category.objects.all()
     permission_classes = [IsAdminOrRead]
-    filter_backends = [filters.SearchFilter]
-    filterset_fields = ['name', ]
+    filter_backends = [SearchFilter]
+    search_fields = ['name', ]
     lookup_field = 'slug'
 
 
@@ -39,8 +42,7 @@ class TitlesViewSet(viewsets.ModelViewSet):
     queryset = Titles.objects.all()
     http_method_names = ('get', 'post', 'delete', 'patch')
     permission_classes = [IsAdminOrRead]
-    filter_backends = [filters.SearchFilter]
-    filterset_fields = ['name', ]
+
 
 
 class UserInfo(APIView):
