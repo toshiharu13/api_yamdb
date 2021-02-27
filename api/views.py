@@ -21,8 +21,8 @@ from .serializers import GenreSerializer, UserSerializer, CategoriesSerializer, 
 
 from .models import Category, Comment, Genre, Reviews, Titles
 from .serializers import (CategoriesSerializer, CommentSerializer,
-                          GenreSerializer, ReviewsSerializer, TitlesSerializer,
-                          UserSerializer)
+                          GenreSerializer, ReviewsSerializer, TitleGetListSerializer,
+                          UserSerializer, TitlesPostUpdateSerializer)
 
 
 class GenresViewSet(ListPostDelMix):
