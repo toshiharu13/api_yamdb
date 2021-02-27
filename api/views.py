@@ -5,14 +5,19 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, mixins, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, SAFE_METHODS
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .mixins import ListPostDelMix
 from .permissions import IsAdminOrNone, IsAdminOrRead, IsModeratorAdminAuthor
 
+
 User = get_user_model()
+
+from .models import Titles, Category, Genre
+from .serializers import GenreSerializer, UserSerializer, CategoriesSerializer, TitlesPostUpdateSerializer, TitleGetListSerializer
+
 
 from .models import Category, Comment, Genre, Reviews, Titles
 from .serializers import (CategoriesSerializer, CommentSerializer,
@@ -39,7 +44,11 @@ class CategoryViewSet(ListPostDelMix):
 
 
 class TitlesViewSet(viewsets.ModelViewSet):
-    serializer_class = TitlesSerializer
+    #  serializer_class = TitlesSerializer
+    def get_serializer_class(self):
+        if self.request.method in SAFE_METHODS:
+            return TitleGetListSerializer
+        return TitlesPostUpdateSerializer
     queryset = Titles.objects.all()
     http_method_names = ('get', 'post', 'delete', 'patch')
     permission_classes = [IsAdminOrRead]
