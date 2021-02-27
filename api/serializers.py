@@ -20,11 +20,10 @@ class TitleGetListSerializer(serializers.ModelSerializer):
     rating = serializers.FloatField(read_only=True)
     category = serializers.SlugRelatedField(read_only=True,
                                             slug_field='slug',
-                                            many=True,
                                             )
     genre = serializers.SlugRelatedField(read_only=True,
                                          slug_field='slug',
-                                         many=True,
+                                         #many=True,
                                          )
 
     class Meta:
@@ -36,13 +35,18 @@ class TitlesPostUpdateSerializer(serializers.ModelSerializer):
     genre = serializers.SlugRelatedField(
         queryset=Genre.objects.all(),
         slug_field='slug',
-        many=True,)
+        required=False,
+    )
     category = serializers.SlugRelatedField(
         queryset=Category.objects.all(),
-        slug_field='slug')
-
+        slug_field='slug',
+        required=False,
+    )
+    year = serializers.IntegerField(
+        required=False,
+    )
     class Meta:
-        fields = ('category', 'genre', 'description', 'name', 'year')
+        fields = ('category', 'genre', 'description', 'name', 'year', 'id')
         model = Titles
 
 
