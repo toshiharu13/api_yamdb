@@ -1,33 +1,46 @@
 from rest_framework import serializers
 
-from .models import Category, Comment, Genre, Reviews, Titles, User
-
-
-class GenreSerializer(serializers.ModelSerializer):
-    class Meta:
-        fields = ('name', 'slug')
-        model = Genre
-
+from .models import Category, Comment, Genre, Review, Title, User
 
 
 class CategoriesSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ('name', 'slug')
         model = Category
+        lookup_field = 'slug'
+        exclude = ('id', )
 
 
-class TitlesSerializer(serializers.ModelSerializer):
-    genre = serializers.SlugRelatedField(
-        slug_field='slug',
-        read_only=True)
-    category = serializers.SlugRelatedField(
-        slug_field='slug',
-        read_only=True)
+class GenreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Genre
+        lookup_field = 'slug'
+        exclude = ('id', )
 
+
+class TitleListSerializer(serializers.ModelSerializer):
+    genre = GenreSerializer(many=True, read_only=True)
+    category = CategoriesSerializer(read_only=True)
+    rating = serializers.IntegerField(read_only=True)
 
     class Meta:
         fields = '__all__'
-        model = Titles
+        model = Title
+
+
+class TitleCreateSerializer(serializers.ModelSerializer):
+    category = serializers.SlugRelatedField(
+        slug_field='slug',
+        queryset=Category.objects.all()
+    )
+    genre = serializers.SlugRelatedField(
+        many=True,
+        slug_field='slug',
+        queryset=Genre.objects.all()
+    )
+
+    class Meta:
+        fields = '__all__'
+        model = Title
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -36,13 +49,37 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
 
 
-class ReviewsSerializer(serializers.ModelSerializer):
+class ReviewSerializer(serializers.ModelSerializer):
+    author = serializers.SlugRelatedField(
+        many=False,
+        read_only=True,
+        slug_field='username'
+    )
+
+    def validate(self, attrs):
+        existы = Review.objects.filter(
+            author=self.context['request'].user,
+            title=self.context['view'].kwargs.get('title_id')).exists()
+        if existы and self.context['request'].method == 'POST':
+            raise serializers.ValidationError(
+                'Сорри, ошибочка('
+                )
+        return attrs
+
     class Meta:
+        read_only_fields = ['id', 'title', 'pub_date', ]
         fields = '__all__'
-        model = Reviews
+        model = Review
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    author = serializers.SlugRelatedField(
+        many=False,
+        read_only=True,
+        slug_field='username'
+    )
+
     class Meta:
+        read_only_fields = ['id', 'review', 'pub_date', ]
         fields = '__all__'
         model = Comment
