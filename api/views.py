@@ -1,22 +1,23 @@
-from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model
 from django.http import Http404
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-
-from rest_framework import viewsets, filters, permissions, mixins, status
-
+from rest_framework import filters, mixins, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
+
 from .mixins import ListPostDelMix
-from .permissions import IsAdminOrNone, IsModeratorAdminAuthor, IsAdminOrRead
+from .permissions import IsAdminOrNone, IsAdminOrRead, IsModeratorAdminAuthor
+
 User = get_user_model()
 
-from .models import Titles, Category, Genre
-from .serializers import GenreSerializer, UserSerializer, CategoriesSerializer, TitlesSerializer
-
+from .models import Category, Comment, Genre, Reviews, Titles
+from .serializers import (CategoriesSerializer, CommentSerializer,
+                          GenreSerializer, ReviewsSerializer, TitlesSerializer,
+                          UserSerializer)
 
 
 class GenresViewSet(ListPostDelMix):
@@ -44,7 +45,6 @@ class TitlesViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminOrRead]
 
 
-
 class UserInfo(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -68,3 +68,12 @@ class UserViewSet(viewsets.ModelViewSet):
     http_method_names = ('get', 'post', 'delete', 'patch')
     lookup_field = 'username'
 
+
+class ReviewsModelSet(viewsets.ModelViewSet):
+    serializer_class = ReviewsSerializer
+    queryset = Reviews.objects.all()
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    serializer_class = CommentSerializer
+    queryset = Comment.objects.all()

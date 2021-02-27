@@ -1,6 +1,6 @@
-from django.db import models
-from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
 
 
 class Category(models.Model):
@@ -37,17 +37,17 @@ class User(AbstractUser):
     REQUIRED_FIELDS = []
 
 
-'''class Reviews(models.Model):
+class Reviews(models.Model):
     title = models.ForeignKey(Titles, on_delete=models.CASCADE)
     text = models.TextField()
-    score = models.IntergerField(validator=[MinValueValidator(1), MaxValueValidator(10)])'''
+    score = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(10)])
 
 
-'''class Comment(models.Model):
+class Comment(models.Model):
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
     )
     reviews = models.ForeignKey(
         Reviews, on_delete=models.CASCADE
-    )'''
+    )
