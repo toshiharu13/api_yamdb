@@ -1,6 +1,5 @@
-from django.urls import include, path
+from django.urls import path
 
-#from rest_framework_simplejwt.views import (TokenObtainPairView)
 from .views import TokenSend, mail_send
 
 urlpatterns = [

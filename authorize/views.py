@@ -1,8 +1,5 @@
-import os
-
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
-from django.shortcuts import render
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -52,7 +49,9 @@ def TokenSend(request):
             token_to_send = get_tokens_for_user(object_user)
             return Response(token_to_send)
         else:
-            return Response({'field_name': 'ERR'}, status=status.HTTP_400_BAD_REQUEST)  # ошибка если пара не совпадает
+            # ошибка если пара не совпадает
+            return Response({'field_name': 'ERR'},
+                            status=status.HTTP_400_BAD_REQUEST)
     #  если пользователя нет проверяем временную таблицу
     test_object = PreUser.objects.filter(email=email_to_check)
     if test_object:
@@ -65,21 +64,9 @@ def TokenSend(request):
                     status=status.HTTP_400_BAD_REQUEST)
 
 
-
-
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
 
     return {
         'token': str(refresh.access_token),
     }
-
-
-'''def create(self, request, *args, **kwargs):
-    Follow.objects.get_or_create(
-        following=get_object_or_404(User, username=kwargs.get('following')),
-        user=self.request.user,
-    )
-    queryset = Follow.objects.filter(following=kwargs.get('following'), user=request.user)
-    serializer = CommentSerializer(data=queryset)
-    return Response(serializer.data, status=status.HTTP_201_CREATED)'''
