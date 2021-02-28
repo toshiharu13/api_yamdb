@@ -92,8 +92,8 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly, IsModeratorAdminAuthor |
-                          IsAdminOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly,
+                          IsModeratorAdminAuthor | IsAdminOrReadOnly]
 
     def get_queryset(self):
         title_id = self.kwargs.get('title_id')
