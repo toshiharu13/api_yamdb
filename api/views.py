@@ -67,16 +67,12 @@ class TitlesViewSet(viewsets.ModelViewSet):
             return TitleListSerializer
         return TitleCreateSerializer
     queryset = Title.objects.annotate(
-        rating_=Avg('reviews__score')).order_by('id')
+        rating=Avg('reviews__score')).order_by('id')
     filter_backends = (DjangoFilterBackend, SearchFilter)
     permission_classes = [IsAdminOrRead]
     filterset_class = TitleFilter
     pagination_class = PageNumberPagination
 
-    '''def get_serializer_class(self):
-        if self.action in ('create', 'update', 'partial_update'):
-            return TitleCreateSerializer
-        return TitleListSerializer'''
 
 
 class UserInfo(APIView):
