@@ -13,8 +13,8 @@ class Genre(models.Model):
     slug = models.SlugField(max_length=200, unique=True)
 
 
-
 class Title(models.Model):
+    #rating = models.IntegerField(null=True)
     name = models.CharField(max_length=200, verbose_name='Произведение')
     year = models.IntegerField(
         null=True, db_index=True)
@@ -22,6 +22,7 @@ class Title(models.Model):
     genre = models.ManyToManyField(Genre, blank=True, related_name='titles')
     category = models.ForeignKey(Category, on_delete=models.SET_NULL,
                                  null=True, related_name='titles')
+
 
 
 class User(AbstractUser):
