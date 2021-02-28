@@ -6,11 +6,13 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import mixins, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
+
 from rest_framework.mixins import (CreateModelMixin, DestroyModelMixin,
                                    ListModelMixin)
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import (AllowAny, IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
+
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
@@ -20,9 +22,12 @@ from .mixins import ListPostDelMix
 from .permissions import (IsAdminOrNone, IsAdminOrRead, IsAdminOrReadOnly,
                           IsModeratorAdminAuthor)
 
+
 User = get_user_model()
 
+
 from .models import Category, Comment, Genre, Review, Title
+
 from .serializers import (CategoriesSerializer, CommentSerializer,
                           GenreSerializer, ReviewSerializer,
                           TitleCreateSerializer, TitleListSerializer,
@@ -55,6 +60,7 @@ class CategoryViewSet(CreateListDestroyViewSet):
 
 
 class TitlesViewSet(viewsets.ModelViewSet):
+
     queryset = Title.objects.annotate(
         rating=Avg('reviews__score')).order_by('id')
     filter_backends = (DjangoFilterBackend, SearchFilter)
@@ -66,6 +72,7 @@ class TitlesViewSet(viewsets.ModelViewSet):
         if self.action in ('create', 'update', 'partial_update'):
             return TitleCreateSerializer
         return TitleListSerializer    
+
 
 
 class UserInfo(APIView):

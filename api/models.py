@@ -13,6 +13,7 @@ class Genre(models.Model):
     slug = models.SlugField(max_length=200, unique=True)
 
 
+
 class Title(models.Model):
     name = models.CharField(max_length=200, verbose_name='Произведение')
     year = models.IntegerField(
