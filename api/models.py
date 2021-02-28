@@ -14,7 +14,7 @@ class Genre(models.Model):
 
 
 class Title(models.Model):
-    rating = models.FloatField(default=0)
+    #rating = models.IntegerField(null=True)
     name = models.CharField(max_length=200, verbose_name='Произведение')
     year = models.IntegerField(
         null=True, db_index=True)
