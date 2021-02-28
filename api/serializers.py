@@ -9,8 +9,6 @@ class CategoriesSerializer(serializers.ModelSerializer):
         model = Category
 
 
-
-
 class GenreSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('name', 'slug')
@@ -38,8 +36,10 @@ class TitleCreateSerializer(serializers.ModelSerializer):
         queryset=Category.objects.all(),
     )
     rating = serializers.FloatField(read_only=True)
+
     class Meta:
-        fields = ('id', 'name', 'year', 'category', 'genre', 'rating', 'description')
+        fields = (
+            'id', 'name', 'year', 'category', 'genre', 'rating', 'description')
         model = Title
 
 
@@ -57,10 +57,10 @@ class ReviewSerializer(serializers.ModelSerializer):
     )
 
     def validate(self, attrs):
-        existы = Review.objects.filter(
+        existos = Review.objects.filter(
             author=self.context['request'].user,
             title=self.context['view'].kwargs.get('title_id')).exists()
-        if existы and self.context['request'].method == 'POST':
+        if existos and self.context['request'].method == 'POST':
             raise serializers.ValidationError(
                 'Сорри, ошибочка('
                 )
