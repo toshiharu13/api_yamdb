@@ -6,43 +6,41 @@ from .models import Category, Comment, Genre, Review, Title, User
 
 class CategoriesSerializer(serializers.ModelSerializer):
     class Meta:
+        fields = ('name', 'slug')
         model = Category
-        lookup_field = 'slug'
-        exclude = ('id', )
 
 
 
 
 class GenreSerializer(serializers.ModelSerializer):
     class Meta:
+        fields = ('name', 'slug')
         model = Genre
-        lookup_field = 'slug'
-        exclude = ('id', )
 
 
 class TitleListSerializer(serializers.ModelSerializer):
-    genre = GenreSerializer(many=True, read_only=True)
-    category = CategoriesSerializer(read_only=True)
-    #rating = serializers.IntegerField(read_only=True)
+    genre = GenreSerializer(many=True)
+    category = CategoriesSerializer()
+    rating = serializers.FloatField(read_only=True)
 
     class Meta:
-        fields = ('name', 'year', 'genre', 'category')
+        fields = '__all__'
         model = Title
 
 
 class TitleCreateSerializer(serializers.ModelSerializer):
-    category = serializers.SlugRelatedField(
-        slug_field='slug',
-        queryset=Category.objects.all()
-    )
     genre = serializers.SlugRelatedField(
         many=True,
+        read_only=True,
         slug_field='slug',
-        queryset=Genre.objects.all()
     )
-    rating = serializers.IntegerField(read_only=True)
+    category = serializers.SlugRelatedField(
+        slug_field='slug',
+        queryset=Category.objects.all(),
+    )
+    rating = serializers.FloatField(read_only=True)
     class Meta:
-        fields = ('id', 'name', 'year', 'category', 'genre', 'rating')
+        fields = ('id', 'name', 'year', 'category', 'genre', 'rating', 'description')
         model = Title
 
 
