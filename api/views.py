@@ -1,34 +1,28 @@
 from django.contrib.auth import get_user_model
 from django.db.models import Avg
-from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import mixins, permissions, status, viewsets
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
 from rest_framework.mixins import (CreateModelMixin, DestroyModelMixin,
                                    ListModelMixin)
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import (SAFE_METHODS, AllowAny,
-                                        IsAuthenticated,
+from rest_framework.permissions import (SAFE_METHODS, IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 
 from .filters import TitleFilter
-from .mixins import ListPostDelMix
 from .permissions import (IsAdminOrNone, IsAdminOrRead, IsAdminOrReadOnly,
-                          IsModeratorAdminAuthor, IsOwnerOrReadOnly)
-
-User = get_user_model()
-
-
-from .models import Category, Comment, Genre, Review, Title
+                          IsModeratorAdminAuthor)
+from .models import Category, Genre, Review, Title
 from .serializers import (CategoriesSerializer, CommentSerializer,
                           GenreSerializer, ReviewSerializer,
                           TitleCreateSerializer, TitleListSerializer,
                           UserSerializer)
+User = get_user_model()
 
 
 class CreateListDestroyViewSet(ListModelMixin,
@@ -36,6 +30,7 @@ class CreateListDestroyViewSet(ListModelMixin,
                                DestroyModelMixin,
                                GenericViewSet):
     pass
+
 
 class GenresViewSet(CreateListDestroyViewSet):
     serializer_class = GenreSerializer
@@ -69,7 +64,6 @@ class TitlesViewSet(viewsets.ModelViewSet):
     pagination_class = PageNumberPagination
 
 
-
 class UserInfo(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -78,6 +72,7 @@ class UserInfo(APIView):
         queryset = User.objects.get(username=request.user.username)
         serializer = UserSerializer(queryset)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
     def patch(self, request):
         user = User.objects.get(username=request.user.username)
         serializer = UserSerializer(user, data=request.data, partial=True)
