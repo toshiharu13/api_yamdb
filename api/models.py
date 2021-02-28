@@ -14,7 +14,6 @@ class Genre(models.Model):
 
 
 class Title(models.Model):
-    #rating = models.IntegerField(null=True)
     name = models.CharField(max_length=200, verbose_name='Произведение')
     year = models.IntegerField(
         null=True, db_index=True)
@@ -25,7 +24,6 @@ class Title(models.Model):
 
     def __str__(self):
         return self.name
-
 
 
 class User(AbstractUser):
