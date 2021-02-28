@@ -1,13 +1,15 @@
 import os
-from rest_framework import status
+
 from django.contrib.auth import get_user_model
-from .models import PreUser
-from django.shortcuts import render
-from .token import code_for_email
 from django.core.mail import send_mail
+from django.shortcuts import render
+from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
+
+from .models import PreUser
+from .token import code_for_email
 
 User = get_user_model()
 
