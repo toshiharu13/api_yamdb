@@ -69,7 +69,7 @@ class TitlesViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.annotate(
         rating_=Avg('reviews__score')).order_by('id')
     filter_backends = (DjangoFilterBackend, SearchFilter)
-    permission_classes = [IsOwnerOrReadOnly]
+    permission_classes = [IsAdminOrRead]
     filterset_class = TitleFilter
     pagination_class = PageNumberPagination
 
