@@ -63,7 +63,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         if existos and self.context['request'].method == 'POST':
             raise serializers.ValidationError(
                 'Сорри, ошибочка('
-                )
+            )
         return attrs
 
     class Meta:
