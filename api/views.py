@@ -20,7 +20,7 @@ from rest_framework.viewsets import GenericViewSet
 from .filters import TitleFilter
 from .mixins import ListPostDelMix
 from .permissions import (IsAdminOrNone, IsAdminOrRead, IsAdminOrReadOnly,
-                          IsModeratorAdminAuthor)
+                          IsOwnerOrReadOnly, IsModeratorAdminAuthor)
 
 
 User = get_user_model()
@@ -32,7 +32,7 @@ from .serializers import (CategoriesSerializer, CommentSerializer,
 
                           GenreSerializer, ReviewSerializer,
                           TitleCreateSerializer, TitleListSerializer,
-                          UserSerializer)
+                          UserSerializer,)
 
 
 
@@ -67,9 +67,9 @@ class TitlesViewSet(viewsets.ModelViewSet):
             return TitleListSerializer
         return TitleCreateSerializer
     queryset = Title.objects.annotate(
-        rating=Avg('reviews__score')).order_by('id')
+        rating_=Avg('reviews__score')).order_by('id')
     filter_backends = (DjangoFilterBackend, SearchFilter)
-    permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrReadOnly]
+    permission_classes = [IsOwnerOrReadOnly]
     filterset_class = TitleFilter
     pagination_class = PageNumberPagination
 
@@ -77,7 +77,6 @@ class TitlesViewSet(viewsets.ModelViewSet):
         if self.action in ('create', 'update', 'partial_update'):
             return TitleCreateSerializer
         return TitleListSerializer'''
-
 
 
 class UserInfo(APIView):
