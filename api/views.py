@@ -1,9 +1,12 @@
+import os
+
 from django.contrib.auth import get_user_model
+from django.core.mail import send_mail
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view
 from rest_framework.filters import SearchFilter
 from rest_framework.mixins import (CreateModelMixin, DestroyModelMixin,
                                    ListModelMixin)
@@ -13,15 +16,18 @@ from rest_framework.permissions import (SAFE_METHODS, IsAuthenticated,
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from .filters import TitleFilter
 from .permissions import (IsAdminOrNone, IsAdminOrRead, IsAdminOrReadOnly,
                           IsModeratorAdminAuthor)
-from .models import Category, Genre, Review, Title
+from .models import Category, Genre, Review, Title, PreUser
 from .serializers import (CategoriesSerializer, CommentSerializer,
                           GenreSerializer, ReviewSerializer,
                           TitleCreateSerializer, TitleListSerializer,
                           UserSerializer)
+from .token import code_for_email
+
 User = get_user_model()
 
 
@@ -125,3 +131,65 @@ class ReviewViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
         serializer.save(author=self.request.user, title=title)
+
+
+@api_view(['POST'])
+def mail_send(request):
+    code_to_send = code_for_email()
+    to_email = request.data
+    to_email = to_email.get('email')
+    test_object = PreUser.objects.filter(email=to_email)
+    if test_object:
+        exist_pair = PreUser.objects.get(email=to_email)
+        exist_pair.confirmation_code = code_to_send
+    else:
+
+        PreUser.objects.create(email=to_email, confirmation_code=code_to_send)
+
+    mail_subject = 'Activate your account.'
+    message = code_to_send
+    admin_from = os.getenv('LOGIN')
+    send_mail(
+        mail_subject,
+        message,
+        admin_from,
+        [to_email],
+    )
+    return Response({'email': to_email})
+
+
+@api_view(['POST'])
+def TokenSend(request):
+    need_params = request.data
+    email_to_check = need_params.get('email')
+    code_to_check = need_params.get('confirmation_code')
+    test_object = User.objects.filter(email=email_to_check)
+    # если в БД есть такой пользователь сверяем пароль
+    if test_object:
+        object_user = User.objects.get(email=email_to_check)
+        # если пароль совпадает генерируем токен
+        if object_user.password == code_to_check:
+            token_to_send = get_tokens_for_user(object_user)
+            return Response(token_to_send)
+        else:
+            # ошибка если пара не совпадает
+            return Response({'field_name': 'ERR'},
+                            status=status.HTTP_400_BAD_REQUEST)
+    #  если пользователя нет проверяем временную таблицу
+    test_object = PreUser.objects.filter(email=email_to_check)
+    if test_object:
+        object_pre_u = PreUser.objects.get(email=email_to_check)
+        if object_pre_u.confirmation_code == code_to_check:
+            User.objects.create(email=email_to_check, password=code_to_check)
+            token_to_send = get_tokens_for_user(object_pre_u)
+            return Response(token_to_send)
+    return Response({'field_name': 'ERR'},
+                    status=status.HTTP_400_BAD_REQUEST)
+
+
+def get_tokens_for_user(user):
+    refresh = RefreshToken.for_user(user)
+
+    return {
+        'token': str(refresh.access_token),
+    }

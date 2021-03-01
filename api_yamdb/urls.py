@@ -19,7 +19,7 @@ from django.views.generic import TemplateView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/v1/auth/', include('authorize.urls')),
+    #path('api/v1/auth/', include('authorize.urls')),
     path('api/v1/', include('api.urls')),
     path(
         'redoc/',
