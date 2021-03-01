@@ -140,7 +140,7 @@ def mail_send(request):
     if serializer.is_valid():
         serializer.save(confirmation_code=code_to_send)
         mail_subject = 'Activate your account.'
-        message = code_to_send
+        message = r'Activation code {code_to_send}'
         admin_from = os.getenv('LOGIN')
         send_mail(
             mail_subject,
@@ -152,34 +152,24 @@ def mail_send(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
 @api_view(['POST'])
 def TokenSend(request):
-    need_params = request.data
-    email_to_check = need_params.get('email')
-    code_to_check = need_params.get('confirmation_code')
-    test_object = User.objects.filter(email=email_to_check)
-    # если в БД есть такой пользователь сверяем пароль
-    if test_object:
-        object_user = User.objects.get(email=email_to_check)
-        # если пароль совпадает генерируем токен
-        if object_user.password == code_to_check:
-            token_to_send = get_tokens_for_user(object_user)
+    serializer = UserSerializer(data=request.data)
+    code_to_check = request.data.get('confirmation_code')
+    if serializer.is_valid():
+        email_to_check = serializer.data.get('email')
+        if PreUser.objects.filter(email=email_to_check).exists():
+            """если в временной БД есть такой пользователь
+             берем/создаём пользователя,резетим пароль"""
+            user_to_check = User.objects.get_or_create(email=email_to_check)
+            user_to_check.password = code_to_check
+            token_to_send = get_tokens_for_user(user_to_check)
             return Response(token_to_send)
         else:
-            # ошибка если пара не совпадает
-            return Response({'field_name': 'ERR'},
+            return Response({'field_name': 'error, no such user'},
                             status=status.HTTP_400_BAD_REQUEST)
-    #  если пользователя нет проверяем временную таблицу
-    test_object = PreUser.objects.filter(email=email_to_check)
-    if test_object:
-        object_pre_u = PreUser.objects.get(email=email_to_check)
-        if object_pre_u.confirmation_code == code_to_check:
-            User.objects.create(email=email_to_check, password=code_to_check)
-            token_to_send = get_tokens_for_user(object_pre_u)
-            return Response(token_to_send)
-    return Response({'field_name': 'ERR'},
-                    status=status.HTTP_400_BAD_REQUEST)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 def get_tokens_for_user(user):
