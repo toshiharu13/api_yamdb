@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Category, Comment, Genre, Review, Title, User
+from .models import Category, Comment, Genre, Review, Title, User, PreUser
 
 
 class CategoriesSerializer(serializers.ModelSerializer):
@@ -83,3 +83,10 @@ class CommentSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'review', 'pub_date', ]
         fields = '__all__'
         model = Comment
+
+
+class PreUserSerializer(serializers.ModelSerializer):
+    # confirmation_code = serializers.CharField(max_length=50, required=False)
+    class Meta:
+        fields = ('email',)
+        model = PreUser

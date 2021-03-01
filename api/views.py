@@ -25,7 +25,7 @@ from .models import Category, Genre, Review, Title, PreUser
 from .serializers import (CategoriesSerializer, CommentSerializer,
                           GenreSerializer, ReviewSerializer,
                           TitleCreateSerializer, TitleListSerializer,
-                          UserSerializer)
+                          UserSerializer, PreUserSerializer)
 from .token import code_for_email
 
 User = get_user_model()
@@ -136,26 +136,21 @@ class ReviewViewSet(viewsets.ModelViewSet):
 @api_view(['POST'])
 def mail_send(request):
     code_to_send = code_for_email()
-    to_email = request.data
-    to_email = to_email.get('email')
-    test_object = PreUser.objects.filter(email=to_email)
-    if test_object:
-        exist_pair = PreUser.objects.get(email=to_email)
-        exist_pair.confirmation_code = code_to_send
-    else:
+    serializer = PreUserSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save(confirmation_code=code_to_send)
+        mail_subject = 'Activate your account.'
+        message = code_to_send
+        admin_from = os.getenv('LOGIN')
+        send_mail(
+            mail_subject,
+            message,
+            admin_from,
+            [request.data.get('email')],
+        )
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        PreUser.objects.create(email=to_email, confirmation_code=code_to_send)
-
-    mail_subject = 'Activate your account.'
-    message = code_to_send
-    admin_from = os.getenv('LOGIN')
-    send_mail(
-        mail_subject,
-        message,
-        admin_from,
-        [to_email],
-    )
-    return Response({'email': to_email})
 
 
 @api_view(['POST'])
