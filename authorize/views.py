@@ -1,3 +1,5 @@
+import os
+
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from rest_framework import status
@@ -26,10 +28,11 @@ def mail_send(request):
 
     mail_subject = 'Activate your account.'
     message = code_to_send
+    admin_from = os.getenv('LOGIN')
     send_mail(
         mail_subject,
         message,
-        'testproject@example.com',
+        admin_from,
         [to_email],
     )
     return Response({'email': to_email})
