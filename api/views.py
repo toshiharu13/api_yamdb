@@ -154,12 +154,13 @@ def mail_send(request):
 
 @api_view(['POST'])
 def TokenSend(request):
-    serializer = UserSerializer(data=request.data)
-    code_to_check = request.data.get('confirmation_code')
+    serializer = PreUserSerializer.Serializer(data=request.data)
     if serializer.is_valid():
         email_to_check = serializer.data.get('email')
-        if PreUser.objects.filter(email=email_to_check).exists():
-            """если в временной БД есть такой пользователь
+        code_to_check = serializer.data.get('confirmation_code')
+        if PreUser.objects.filter(
+                email=email_to_check, confirmation_code=code_to_check).exists():
+            """Если в временной БД есть такой пользователь + пароль
              берем/создаём пользователя,резетим пароль"""
             user_to_check = User.objects.get_or_create(email=email_to_check)
             user_to_check.password = code_to_check
