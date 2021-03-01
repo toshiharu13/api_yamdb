@@ -22,6 +22,6 @@ router.register('users', UserViewSet, basename='useroperations')
 
 urlpatterns = [
 
-    path("users/me/", UserInfo.as_view()),
+    path('users/me/', UserInfo.as_view()),
     path('', include(router.urls)),
 ]
