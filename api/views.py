@@ -27,6 +27,7 @@ from .serializers import (CategoriesSerializer, CommentSerializer,
                           TitleCreateSerializer, TitleListSerializer,
                           UserSerializer, PreUserSerializer)
 from .token import code_for_email
+from .utils import get_tokens_for_user
 
 User = get_user_model()
 
@@ -171,11 +172,3 @@ def TokenSend(request):
                             status=status.HTTP_400_BAD_REQUEST)
     else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-def get_tokens_for_user(user):
-    refresh = RefreshToken.for_user(user)
-
-    return {
-        'token': str(refresh.access_token),
-    }
