@@ -3,6 +3,7 @@ from rest_framework.routers import DefaultRouter
 
 from .views import (CategoryViewSet, CommentViewSet, GenresViewSet,
                     ReviewViewSet, TitlesViewSet, UserInfo, UserViewSet)
+from .views import TokenSend, mail_send
 
 router = DefaultRouter()
 router.register('genres', GenresViewSet)
@@ -21,7 +22,8 @@ router.register(
 router.register('users', UserViewSet, basename='useroperations')
 
 urlpatterns = [
-
-    path("users/me/", UserInfo.as_view()),
+    path('auth/email/', mail_send),
+    path('auth/token/', TokenSend),
+    path('users/me/', UserInfo.as_view()),
     path('', include(router.urls)),
 ]
