@@ -1,8 +1,9 @@
-from django.contrib.auth.models import AbstractUser
-from django.core.validators import MaxValueValidator, MinValueValidator, ValidationError
-from django.db import models
-
 import datetime as dt
+
+from django.contrib.auth.models import AbstractUser
+from django.core.validators import (MaxValueValidator, MinValueValidator,
+                                    ValidationError)
+from django.db import models
 
 
 class Category(models.Model):

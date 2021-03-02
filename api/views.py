@@ -18,14 +18,14 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .filters import TitleFilter
+from .mixins import ListPostDelMix
+from .models import Category, Genre, PreUser, Review, Title
 from .permissions import (IsAdminOrNone, IsAdminOrRead, IsAdminOrReadOnly,
                           IsModeratorAdminAuthor)
-from .models import Category, Genre, Review, Title, PreUser
-from .mixins import ListPostDelMix
 from .serializers import (CategoriesSerializer, CommentSerializer,
-                          GenreSerializer, ReviewSerializer,
+                          GenreSerializer, PreUserSerializer, ReviewSerializer,
                           TitleCreateSerializer, TitleListSerializer,
-                          UserSerializer, PreUserSerializer)
+                          UserSerializer)
 from .token import code_for_email
 from .utils import get_tokens_for_user
 
