@@ -51,12 +51,15 @@ class Title(models.Model):
 class User(AbstractUser):
     email = models.EmailField('email address', unique=True)
     bio = models.TextField(max_length=300, blank=True)
+    USER = 'user'
+    MODERATOR = 'moderator'
+    ADMIN = 'admin'
     USER_ROLE = (
-        ('user', 'user'),
-        ('moderator', 'moderator'),
-        ('admin', 'admin'),
+        (USER, 'user'),
+        (MODERATOR, 'moderator'),
+        (ADMIN, 'admin'),
     )
-    role = models.CharField(max_length=9, choices=USER_ROLE, default='user')
+    role = models.CharField(max_length=9, choices=USER_ROLE, default=USER)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
