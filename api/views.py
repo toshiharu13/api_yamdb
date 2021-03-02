@@ -95,6 +95,19 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     lookup_field = 'username'
 
+@action(detail=False,
+        methods=['get', 'patch'],
+        permission_classes=[IsAuthenticated],)
+def me(self, request):
+    if request.method == 'PATCH':
+        serializer = self.get_serializer(request.user, data=request.data,
+                                         partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(role=self.request.user.role)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    serializer = self.get_serializer(request.user)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
@@ -154,7 +167,7 @@ def mail_send(request):
 
 @api_view(['POST'])
 def TokenSend(request):
-    serializer = PreUserSerializer.Serializer(data=request.data)
+    serializer = PreUserSerializer(data=request.data)
     if serializer.is_valid():
         email_to_check = serializer.data.get('email')
         code_to_check = serializer.data.get('confirmation_code')
@@ -162,7 +175,7 @@ def TokenSend(request):
                 email=email_to_check, confirmation_code=code_to_check).exists():
             """Если в временной БД есть такой пользователь + пароль
              берем/создаём пользователя,резетим пароль"""
-            user_to_check = User.objects.get_or_create(email=email_to_check)
+            user_to_check, tru_false = User.objects.get_or_create(email=email_to_check)
             user_to_check.password = code_to_check
             token_to_send = get_tokens_for_user(user_to_check)
             return Response(token_to_send)
