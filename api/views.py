@@ -48,12 +48,6 @@ class CategoryViewSet(ListPostDelMix):
 
 
 class TitlesViewSet(viewsets.ModelViewSet):
-
-    def get_serializer_class(self):
-        if self.request.method in SAFE_METHODS:
-            return TitleListSerializer
-        return TitleCreateSerializer
-
     queryset = Title.objects.annotate(
         rating=Avg('reviews__score')).order_by('id')
     filter_backends = (DjangoFilterBackend, SearchFilter)
@@ -73,11 +67,8 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     lookup_field = 'username'
 
-    @action(
-            detail=False,
-            methods=['get', 'patch'],
-            permission_classes=[IsAuthenticated],
-           )
+    @action(detail=False, methods=['get', 'patch'],
+            permission_classes=[IsAuthenticated],)
     def me(self, request):
         if request.method == 'GET':
             serializer = self.get_serializer(request.user)
@@ -85,8 +76,7 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(
             request.user,
             data=request.data,
-            partial=True,
-        )
+            partial=True,)
         serializer.is_valid(raise_exception=True)
         serializer.save(role=request.user.role, partial=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
