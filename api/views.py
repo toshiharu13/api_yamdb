@@ -63,6 +63,7 @@ class TitlesViewSet(viewsets.ModelViewSet):
         if self.request.method in SAFE_METHODS:
             return TitleListSerializer
         return TitleCreateSerializer
+
     queryset = Title.objects.annotate(
         rating=Avg('reviews__score')).order_by('id')
     filter_backends = (DjangoFilterBackend, SearchFilter)
@@ -95,9 +96,10 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     lookup_field = 'username'
 
+
 @action(detail=False,
         methods=['get', 'patch'],
-        permission_classes=[IsAuthenticated],)
+        permission_classes=[IsAuthenticated], )
 def me(self, request):
     if request.method == 'PATCH':
         serializer = self.get_serializer(request.user, data=request.data,
@@ -172,10 +174,12 @@ def TokenSend(request):
         email_to_check = serializer.data.get('email')
         code_to_check = serializer.data.get('confirmation_code')
         if PreUser.objects.filter(
-                email=email_to_check, confirmation_code=code_to_check).exists():
+                email=email_to_check,
+                confirmation_code=code_to_check).exists():
             """Если в временной БД есть такой пользователь + пароль
              берем/создаём пользователя,резетим пароль"""
-            user_to_check, tru_false = User.objects.get_or_create(email=email_to_check)
+            user_to_check, tru_false = User.objects.get_or_create(
+                email=email_to_check)
             user_to_check.password = code_to_check
             token_to_send = get_tokens_for_user(user_to_check)
             return Response(token_to_send)

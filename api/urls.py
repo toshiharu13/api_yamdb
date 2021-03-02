@@ -22,8 +22,8 @@ router.register(
 router.register('users', UserViewSet, basename='useroperations')
 
 urlpatterns = [
+    path('', include(router.urls)),
     path('auth/email/', mail_send),
     path('auth/token/', TokenSend),
-    path('users/me/', UserInfo.as_view()),
-    path('', include(router.urls)),
+
 ]
