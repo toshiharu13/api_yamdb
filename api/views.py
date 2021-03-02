@@ -60,6 +60,7 @@ class CategoryViewSet(CreateListDestroyViewSet):
 
 class TitlesViewSet(viewsets.ModelViewSet):
 
+
     def get_serializer_class(self):
         if self.request.method in SAFE_METHODS:
             return TitleListSerializer
@@ -71,6 +72,11 @@ class TitlesViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminOrRead]
     filterset_class = TitleFilter
     pagination_class = PageNumberPagination
+
+    def get_serializer_class(self):
+        if self.request.method in SAFE_METHODS:
+            return TitleListSerializer
+        return TitleCreateSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
