@@ -59,6 +59,7 @@ class CategoryViewSet(CreateListDestroyViewSet):
 
 
 class TitlesViewSet(viewsets.ModelViewSet):
+
     def get_serializer_class(self):
         if self.request.method in SAFE_METHODS:
             return TitleListSerializer
