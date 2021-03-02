@@ -7,12 +7,14 @@ from django.db import models
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=200, default='noname', unique=True, verbose_name='Категория')
+    name = models.CharField(
+        max_length=200, default='noname', unique=True, verbose_name='Категория')
     slug = models.SlugField(max_length=200, unique=True)
 
 
 class Genre(models.Model):
-    name = models.CharField(max_length=200, default='noname', verbose_name='Жанр')
+    name = models.CharField(
+        max_length=200, default='noname', verbose_name='Жанр')
     slug = models.SlugField(max_length=200, unique=True)
 
 

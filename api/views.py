@@ -8,14 +8,10 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
 from rest_framework.decorators import action, api_view
 from rest_framework.filters import SearchFilter
-from rest_framework.mixins import (CreateModelMixin, DestroyModelMixin,
-                                   ListModelMixin)
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import (SAFE_METHODS, IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
-from rest_framework.viewsets import GenericViewSet
-from rest_framework_simplejwt.tokens import RefreshToken
 
 from .filters import TitleFilter
 from .mixins import ListPostDelMix
@@ -30,9 +26,6 @@ from .token import code_for_email
 from .utils import get_tokens_for_user
 
 User = get_user_model()
-
-
-
 
 
 class GenresViewSet(ListPostDelMix):
@@ -55,7 +48,6 @@ class CategoryViewSet(ListPostDelMix):
 
 
 class TitlesViewSet(viewsets.ModelViewSet):
-
 
     def get_serializer_class(self):
         if self.request.method in SAFE_METHODS:
@@ -80,7 +72,6 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminOrNone]
     queryset = User.objects.all()
     lookup_field = 'username'
-
 
     @action(
             detail=False,

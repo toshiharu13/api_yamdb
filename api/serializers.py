@@ -87,6 +87,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class PreUserSerializer(serializers.ModelSerializer):
     confirmation_code = serializers.CharField(max_length=50, required=False)
+
     class Meta:
         fields = ('email', 'confirmation_code')
         model = PreUser
