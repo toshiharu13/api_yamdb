@@ -72,24 +72,6 @@ class TitlesViewSet(viewsets.ModelViewSet):
     pagination_class = PageNumberPagination
 
 
-class UserInfo(APIView):
-    permission_classes = [IsAuthenticated]
-
-    @action(detail=False, methods=['GET', 'PATCH'])
-    def get(self, request):
-        queryset = User.objects.get(username=request.user.username)
-        serializer = UserSerializer(queryset)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def patch(self, request):
-        user = User.objects.get(username=request.user.username)
-        serializer = UserSerializer(user, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [IsAdminOrNone]
@@ -97,18 +79,23 @@ class UserViewSet(viewsets.ModelViewSet):
     lookup_field = 'username'
 
 
-@action(detail=False,
-        methods=['get', 'patch'],
-        permission_classes=[IsAuthenticated], )
-def me(self, request):
-    if request.method == 'PATCH':
-        serializer = self.get_serializer(request.user, data=request.data,
-                                         partial=True)
+    @action(
+            detail=False,
+            methods=['get', 'patch'],
+            permission_classes=[IsAuthenticated],
+           )
+    def me(self, request):
+        if request.method == 'GET':
+            serializer = self.get_serializer(request.user)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        serializer = self.get_serializer(
+            request.user,
+            data=request.data,
+            partial=True,
+        )
         serializer.is_valid(raise_exception=True)
-        serializer.save(role=self.request.user.role)
+        serializer.save(role=request.user.role, partial=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    serializer = self.get_serializer(request.user)
-    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class CommentViewSet(viewsets.ModelViewSet):

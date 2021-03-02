@@ -2,28 +2,26 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from .views import (CategoryViewSet, CommentViewSet, GenresViewSet,
-                    ReviewViewSet, TitlesViewSet, UserInfo, UserViewSet)
+                    ReviewViewSet, TitlesViewSet, UserViewSet)
 from .views import TokenSend, mail_send
 
-router = DefaultRouter()
-router.register('genres', GenresViewSet)
-router.register('categories', CategoryViewSet)
-router.register('titles', TitlesViewSet)
-router.register(
-    r'titles/(?P<title_id>[0-9]+)/reviews',
+router_v1 = DefaultRouter()
+router_v1.register('genres', GenresViewSet)
+router_v1.register('categories', CategoryViewSet)
+router_v1.register('titles', TitlesViewSet)
+router_v1.register(r'titles/(?P<title_id>[0-9]+)/reviews',
     ReviewViewSet,
     basename='Review'
 )
-router.register(
+router_v1.register(
     r'titles/(?P<title_id>[0-9]+)/reviews/(?P<review_id>[0-9]+)/comments',
     CommentViewSet,
     basename='Comment'
 )
-router.register('users', UserViewSet, basename='useroperations')
+router_v1.register('users', UserViewSet, basename='users')
 
 urlpatterns = [
-    path('', include(router.urls)),
-    path('auth/email/', mail_send),
-    path('auth/token/', TokenSend),
-
+    path('v1/auth/email/', mail_send),
+    path('v1/auth/token/', TokenSend),
+    path('v1/', include(router_v1.urls)),
 ]
