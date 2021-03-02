@@ -14,7 +14,6 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import (SAFE_METHODS, IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -22,6 +21,7 @@ from .filters import TitleFilter
 from .permissions import (IsAdminOrNone, IsAdminOrRead, IsAdminOrReadOnly,
                           IsModeratorAdminAuthor)
 from .models import Category, Genre, Review, Title, PreUser
+from .mixins import ListPostDelMix
 from .serializers import (CategoriesSerializer, CommentSerializer,
                           GenreSerializer, ReviewSerializer,
                           TitleCreateSerializer, TitleListSerializer,
@@ -32,14 +32,10 @@ from .utils import get_tokens_for_user
 User = get_user_model()
 
 
-class CreateListDestroyViewSet(ListModelMixin,
-                               CreateModelMixin,
-                               DestroyModelMixin,
-                               GenericViewSet):
-    pass
 
 
-class GenresViewSet(CreateListDestroyViewSet):
+
+class GenresViewSet(ListPostDelMix):
     serializer_class = GenreSerializer
     queryset = Genre.objects.all().order_by('id')
     permission_classes = [IsAdminOrRead]
@@ -48,7 +44,7 @@ class GenresViewSet(CreateListDestroyViewSet):
     search_fields = ['name', ]
 
 
-class CategoryViewSet(CreateListDestroyViewSet):
+class CategoryViewSet(ListPostDelMix):
     serializer_class = CategoriesSerializer
     queryset = Category.objects.all().order_by('id')
     permission_classes = [IsAdminOrRead]
