@@ -5,14 +5,14 @@ from .models import Category, Comment, Genre, Review, Title, User, PreUser
 
 class CategoriesSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ('name', 'slug')
         model = Category
+        exclude = ('id',)
 
 
 class GenreSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ('name', 'slug')
         model = Genre
+        exclude = ('id',)
 
 
 class TitleListSerializer(serializers.ModelSerializer):

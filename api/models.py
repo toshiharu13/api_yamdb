@@ -1,26 +1,48 @@
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator, ValidationError
 from django.db import models
+
+import datetime as dt
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=200, default='noname', unique=True)
+    name = models.CharField(max_length=200, default='noname', unique=True, verbose_name='Категория')
     slug = models.SlugField(max_length=200, unique=True)
 
 
 class Genre(models.Model):
-    name = models.CharField(max_length=200, default='noname')
+    name = models.CharField(max_length=200, default='noname', verbose_name='Жанр')
     slug = models.SlugField(max_length=200, unique=True)
 
 
+def year_validator(value):
+    if value > dt.datetime.now().year:
+        raise ValidationError(
+            'Введите корректный год!',
+            params={'value': value},
+        )
+
+
 class Title(models.Model):
-    name = models.CharField(max_length=200, verbose_name='Произведение')
-    year = models.IntegerField(
-        null=True, db_index=True)
-    description = models.CharField(max_length=200, null=True)
-    genre = models.ManyToManyField(Genre, blank=True, related_name='titles')
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL,
-                                 null=True, related_name='titles')
+    name = models.CharField(max_length=200, verbose_name='название')
+    year = models.PositiveSmallIntegerField(
+        null=True,
+        blank=True,
+        validators=[year_validator],
+        verbose_name='год издания',
+    )
+    description = models.TextField(verbose_name='описание')
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.CASCADE,
+        verbose_name='категория',
+        related_name='titles',
+    )
+
+    genre = models.ManyToManyField(
+        Genre,
+        related_name='titles',
+    )
 
     def __str__(self):
         return self.name

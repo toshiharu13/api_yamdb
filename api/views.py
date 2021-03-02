@@ -59,16 +59,17 @@ class CategoryViewSet(CreateListDestroyViewSet):
 
 
 class TitlesViewSet(viewsets.ModelViewSet):
-    def get_serializer_class(self):
-        if self.request.method in SAFE_METHODS:
-            return TitleListSerializer
-        return TitleCreateSerializer
     queryset = Title.objects.annotate(
         rating=Avg('reviews__score')).order_by('id')
     filter_backends = (DjangoFilterBackend, SearchFilter)
     permission_classes = [IsAdminOrRead]
     filterset_class = TitleFilter
     pagination_class = PageNumberPagination
+
+    def get_serializer_class(self):
+        if self.request.method in SAFE_METHODS:
+            return TitleListSerializer
+        return TitleCreateSerializer
 
 
 class UserInfo(APIView):
