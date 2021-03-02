@@ -59,10 +59,12 @@ class CategoryViewSet(CreateListDestroyViewSet):
 
 
 class TitlesViewSet(viewsets.ModelViewSet):
+
     def get_serializer_class(self):
         if self.request.method in SAFE_METHODS:
             return TitleListSerializer
         return TitleCreateSerializer
+
     queryset = Title.objects.annotate(
         rating=Avg('reviews__score')).order_by('id')
     filter_backends = (DjangoFilterBackend, SearchFilter)
@@ -71,29 +73,30 @@ class TitlesViewSet(viewsets.ModelViewSet):
     pagination_class = PageNumberPagination
 
 
-class UserInfo(APIView):
-    permission_classes = [IsAuthenticated]
-
-    @action(detail=False, methods=['GET', 'PATCH'])
-    def get(self, request):
-        queryset = User.objects.get(username=request.user.username)
-        serializer = UserSerializer(queryset)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def patch(self, request):
-        user = User.objects.get(username=request.user.username)
-        serializer = UserSerializer(user, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [IsAdminOrNone]
     queryset = User.objects.all()
     lookup_field = 'username'
+
+
+    @action(
+            detail=False,
+            methods=['get', 'patch'],
+            permission_classes=[IsAuthenticated],
+           )
+    def me(self, request):
+        if request.method == 'GET':
+            serializer = self.get_serializer(request.user)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        serializer = self.get_serializer(
+            request.user,
+            data=request.data,
+            partial=True,
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save(role=request.user.role, partial=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -154,15 +157,17 @@ def mail_send(request):
 
 @api_view(['POST'])
 def TokenSend(request):
-    serializer = PreUserSerializer.Serializer(data=request.data)
+    serializer = PreUserSerializer(data=request.data)
     if serializer.is_valid():
         email_to_check = serializer.data.get('email')
         code_to_check = serializer.data.get('confirmation_code')
         if PreUser.objects.filter(
-                email=email_to_check, confirmation_code=code_to_check).exists():
+                email=email_to_check,
+                confirmation_code=code_to_check).exists():
             """Если в временной БД есть такой пользователь + пароль
              берем/создаём пользователя,резетим пароль"""
-            user_to_check = User.objects.get_or_create(email=email_to_check)
+            user_to_check, tru_false = User.objects.get_or_create(
+                email=email_to_check)
             user_to_check.password = code_to_check
             token_to_send = get_tokens_for_user(user_to_check)
             return Response(token_to_send)
