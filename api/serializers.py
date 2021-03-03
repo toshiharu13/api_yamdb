@@ -35,7 +35,6 @@ class TitleCreateSerializer(serializers.ModelSerializer):
         slug_field='slug',
         queryset=Category.objects.all(),
     )
-    #rating = serializers.FloatField(read_only=True)
 
     class Meta:
         fields = '__all__'
@@ -44,7 +43,8 @@ class TitleCreateSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ('first_name', 'last_name', 'username', 'bio', 'email', 'role')
+        fields = (
+            'first_name', 'last_name', 'username', 'bio', 'email', 'role')
         model = User
 
 
