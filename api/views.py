@@ -125,16 +125,15 @@ class ReviewViewSet(viewsets.ModelViewSet):
 def mail_send(request):
     code_to_send = code_for_email()
     serializer = PreUserSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save(confirmation_code=code_to_send)
-        send_mail(
-            subject='Activate your account.',
-            message=r'Activation code {code_to_send}',
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[serializer.validated_data.get('email')],
-        )
-        return Response(serializer.data)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    serializer.is_valid(raise_exception=True)
+    serializer.save(confirmation_code=code_to_send)
+    send_mail(
+        subject='Activate your account.',
+        message=r'Activation code {code_to_send}',
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=[serializer.validated_data.get('email')],
+    )
+    return Response(serializer.data)
 
 
 @api_view(['POST'])
