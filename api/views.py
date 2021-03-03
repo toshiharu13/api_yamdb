@@ -135,7 +135,7 @@ def mail_send(request):
 
 
 @api_view(['POST'])
-def tokensend(request):
+def token_send(request):
     """Если в временной БД есть такой пользователь + пароль
      берем/создаём пользователя"""
     serializer = PreUserSerializer(data=request.data)
