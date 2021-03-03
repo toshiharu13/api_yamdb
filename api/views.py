@@ -25,6 +25,8 @@ from .serializers import (CategoriesSerializer, CommentSerializer,
 from .token import code_for_email
 from .utils import get_tokens_for_user
 
+from api_yamdb import settings
+
 User = get_user_model()
 
 
@@ -125,14 +127,11 @@ def mail_send(request):
     serializer = PreUserSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save(confirmation_code=code_to_send)
-        mail_subject = 'Activate your account.'
-        message = r'Activation code {code_to_send}'
-        admin_from = os.getenv('LOGIN')
         send_mail(
-            mail_subject,
-            message,
-            admin_from,
-            [request.data.get('email')],
+            subject='Activate your account.',
+            message=r'Activation code {code_to_send}',
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[request.data.get('email')],
         )
         return Response(serializer.data)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -148,6 +148,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = os.getenv('LOGIN')
 EMAIL_HOST_PASSWORD = os.getenv('PASS')
 EMAIL_PORT = 587
+DEFAULT_FROM_EMAIL = os.getenv('LOGIN')
 
 AUTH_USER_MODEL = 'api.User'
 SIMPLE_JWT = {'ACCESS_TOKEN_LIFETIME': timedelta(days=30)}
