@@ -143,7 +143,7 @@ def tokenSend(request):
      берем/создаём пользователя"""
     serializer = PreUserSerializer(data=request.data)
     if serializer.is_valid():
-        email_to_check = serializer.data.get('email')
+        email_to_check = serializer.validated_data.get('email')
         code_to_check = serializer.data.get('confirmation_code')
         if PreUser.objects.filter(
                 email=email_to_check,
