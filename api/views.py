@@ -131,7 +131,7 @@ def mail_send(request):
             subject='Activate your account.',
             message=r'Activation code {code_to_send}',
             from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[request.data.get('email')],
+            recipient_list=[serializer.validated_data.get('email')],
         )
         return Response(serializer.data)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
