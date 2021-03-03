@@ -141,18 +141,17 @@ def tokenSend(request):
     """Если в временной БД есть такой пользователь + пароль
      берем/создаём пользователя"""
     serializer = PreUserSerializer(data=request.data)
-    if serializer.is_valid():
-        email_to_check = serializer.validated_data.get('email')
-        code_to_check = serializer.data.get('confirmation_code')
-        if PreUser.objects.filter(
-                email=email_to_check,
-                confirmation_code=code_to_check).exists():
-            user_to_check, user_created = User.objects.get_or_create(
-                email=email_to_check)
-            token_to_send = get_tokens_for_user(user_to_check)
-            return Response(token_to_send)
-        else:
-            return Response({'field_name': 'error, no such user'},
-                            status=status.HTTP_400_BAD_REQUEST)
+    serializer.is_valid(raise_exception=True)
+    email_to_check = serializer.validated_data.get('email')
+    code_to_check = serializer.data.get('confirmation_code')
+    if PreUser.objects.filter(
+            email=email_to_check,
+            confirmation_code=code_to_check).exists():
+        user_to_check, user_created = User.objects.get_or_create(
+            email=email_to_check)
+        token_to_send = get_tokens_for_user(user_to_check)
+        return Response(token_to_send)
     else:
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'field_name': 'error, no such user'},
+                        status=status.HTTP_400_BAD_REQUEST)
+
