@@ -1,9 +1,9 @@
-import datetime as dt
 
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import (MaxValueValidator, MinValueValidator,
-                                    ValidationError)
+from django.core.validators import (MaxValueValidator, MinValueValidator)
 from django.db import models
+
+from .validators import year_validator
 
 
 class Category(models.Model):
@@ -17,14 +17,6 @@ class Genre(models.Model):
     name = models.CharField(
         max_length=200, default='noname', verbose_name='Жанр')
     slug = models.SlugField(max_length=200, unique=True)
-
-
-def year_validator(value):
-    if value > dt.datetime.now().year:
-        raise ValidationError(
-            'Введите корректный год!',
-            params={'value': value},
-        )
 
 
 class Title(models.Model):
