@@ -1,5 +1,3 @@
-import os
-
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django.db.models import Avg
@@ -13,6 +11,8 @@ from rest_framework.permissions import (SAFE_METHODS, IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 
+from api_yamdb import settings
+
 from .filters import TitleFilter
 from .mixins import ListPostDelMix
 from .models import Category, Genre, PreUser, Review, Title
@@ -24,8 +24,6 @@ from .serializers import (CategoriesSerializer, CommentSerializer,
                           UserSerializer)
 from .token import code_for_email
 from .utils import get_tokens_for_user
-
-from api_yamdb import settings
 
 User = get_user_model()
 
@@ -137,7 +135,7 @@ def mail_send(request):
 
 
 @api_view(['POST'])
-def tokenSend(request):
+def tokensend(request):
     """Если в временной БД есть такой пользователь + пароль
      берем/создаём пользователя"""
     serializer = PreUserSerializer(data=request.data)
@@ -154,4 +152,3 @@ def tokenSend(request):
     else:
         return Response({'field_name': 'error, no such user'},
                         status=status.HTTP_400_BAD_REQUEST)
-
