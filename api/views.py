@@ -25,6 +25,8 @@ from .serializers import (CategoriesSerializer, CommentSerializer,
 from .token import code_for_email
 from .utils import get_tokens_for_user
 
+from api_yamdb import settings
+
 User = get_user_model()
 
 
@@ -123,39 +125,33 @@ class ReviewViewSet(viewsets.ModelViewSet):
 def mail_send(request):
     code_to_send = code_for_email()
     serializer = PreUserSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save(confirmation_code=code_to_send)
-        mail_subject = 'Activate your account.'
-        message = r'Activation code {code_to_send}'
-        admin_from = os.getenv('LOGIN')
-        send_mail(
-            mail_subject,
-            message,
-            admin_from,
-            [request.data.get('email')],
-        )
-        return Response(serializer.data)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    serializer.is_valid(raise_exception=True)
+    serializer.save(confirmation_code=code_to_send)
+    send_mail(
+        subject='Activate your account.',
+        message=r'Activation code {code_to_send}',
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=[serializer.validated_data.get('email')],
+    )
+    return Response(serializer.data)
 
 
 @api_view(['POST'])
-def TokenSend(request):
+def tokenSend(request):
+    """Если в временной БД есть такой пользователь + пароль
+     берем/создаём пользователя"""
     serializer = PreUserSerializer(data=request.data)
-    if serializer.is_valid():
-        email_to_check = serializer.data.get('email')
-        code_to_check = serializer.data.get('confirmation_code')
-        if PreUser.objects.filter(
-                email=email_to_check,
-                confirmation_code=code_to_check).exists():
-            """Если в временной БД есть такой пользователь + пароль
-             берем/создаём пользователя,резетим пароль"""
-            user_to_check, tru_false = User.objects.get_or_create(
-                email=email_to_check)
-            user_to_check.password = code_to_check
-            token_to_send = get_tokens_for_user(user_to_check)
-            return Response(token_to_send)
-        else:
-            return Response({'field_name': 'error, no such user'},
-                            status=status.HTTP_400_BAD_REQUEST)
+    serializer.is_valid(raise_exception=True)
+    email_to_check = serializer.validated_data.get('email')
+    code_to_check = serializer.data.get('confirmation_code')
+    if PreUser.objects.filter(
+            email=email_to_check,
+            confirmation_code=code_to_check).exists():
+        user_to_check, user_created = User.objects.get_or_create(
+            email=email_to_check)
+        token_to_send = get_tokens_for_user(user_to_check)
+        return Response(token_to_send)
     else:
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'field_name': 'error, no such user'},
+                        status=status.HTTP_400_BAD_REQUEST)
+
