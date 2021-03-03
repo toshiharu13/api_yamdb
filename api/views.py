@@ -140,6 +140,8 @@ def mail_send(request):
 
 @api_view(['POST'])
 def tokenSend(request):
+    """Если в временной БД есть такой пользователь + пароль
+     берем/создаём пользователя"""
     serializer = PreUserSerializer(data=request.data)
     if serializer.is_valid():
         email_to_check = serializer.data.get('email')
@@ -147,11 +149,8 @@ def tokenSend(request):
         if PreUser.objects.filter(
                 email=email_to_check,
                 confirmation_code=code_to_check).exists():
-            """Если в временной БД есть такой пользователь + пароль
-             берем/создаём пользователя,резетим пароль"""
-            user_to_check, tru_false = User.objects.get_or_create(
+            user_to_check, user_created = User.objects.get_or_create(
                 email=email_to_check)
-            user_to_check.password = code_to_check
             token_to_send = get_tokens_for_user(user_to_check)
             return Response(token_to_send)
         else:
