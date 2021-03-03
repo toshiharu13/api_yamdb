@@ -139,7 +139,7 @@ def mail_send(request):
 
 
 @api_view(['POST'])
-def TokenSend(request):
+def tokenSend(request):
     serializer = PreUserSerializer(data=request.data)
     if serializer.is_valid():
         email_to_check = serializer.data.get('email')

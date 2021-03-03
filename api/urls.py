@@ -2,7 +2,7 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from .views import (CategoryViewSet, CommentViewSet, GenresViewSet,
-                    ReviewViewSet, TitlesViewSet, TokenSend, UserViewSet,
+                    ReviewViewSet, TitlesViewSet, tokenSend, UserViewSet,
                     mail_send)
 
 router_v1 = DefaultRouter()
@@ -22,6 +22,6 @@ router_v1.register('users', UserViewSet, basename='users')
 
 urlpatterns = [
     path('v1/auth/email/', mail_send),
-    path('v1/auth/token/', TokenSend),
+    path('v1/auth/token/', tokenSend),
     path('v1/', include(router_v1.urls)),
 ]
