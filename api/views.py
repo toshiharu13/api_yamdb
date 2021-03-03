@@ -141,7 +141,7 @@ def token_send(request):
     serializer = PreUserSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     email_to_check = serializer.validated_data.get('email')
-    code_to_check = serializer.data.get('confirmation_code')
+    code_to_check = serializer.validated_data.get('confirmation_code')
     if PreUser.objects.filter(
             email=email_to_check,
             confirmation_code=code_to_check).exists():
